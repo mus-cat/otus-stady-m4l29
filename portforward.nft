@@ -1,0 +1,14 @@
+table ip portforwarding {
+
+  chain prerouting {
+    type nat hook prerouting priority 0; policy accept;
+    ip daddr 192.168.56.33 tcp dport 8080 dnat to 192.168.0.2:80
+    ip daddr 192.168.56.33 tcp dport 8081 dnat to 192.168.0.2:81
+  }
+
+  chain postrouting {
+    type nat hook postrouting priority 0; policy accept;
+    ip daddr 192.168.0.2 tcp dport 80 masquerade
+  }
+}
+

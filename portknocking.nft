@@ -1,0 +1,35 @@
+table ip portknocking {
+
+  set attempters {
+    flags timeout
+    type ipv4_addr . inet_service
+  }
+
+  chain prerouting {
+    type filter hook prerouting priority 0; policy accept;
+    
+    #ip daddr != {192.168.1.2, 10.0.2.15} accept 
+    ip daddr != 192.168.1.2 accept 
+    tcp dport 111 add @attempters { ip saddr . 222 timeout 5s } drop
+    tcp dport 222 ip saddr . tcp dport @attempters add @attempters { ip saddr . 333 timeout 5s } drop
+    tcp dport 333 ip saddr . tcp dport @attempters add @attempters { ip saddr . 22 timeout 5s } drop
+  }
+
+  chain input {
+    type filter hook input priority 0; policy drop;
+
+    iif lo accept
+    iif eth0 accept
+    ct state established,related  accept
+    icmp type echo-request accept
+
+    
+    tcp dport 22 ip saddr . tcp dport @attempters ct state new accept
+  }
+
+  chain postrouting {
+    type nat hook postrouting priority 100; policy accept;
+
+    oif eth0 ip saddr 192.168.0.0/23 masquerade
+  }
+}

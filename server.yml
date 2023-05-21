@@ -1,0 +1,38 @@
+---
+- name: Config Central Server
+  hosts: all
+  become: yes
+  gather_facts: no
+  vars:
+
+  tasks:
+    - name: Install nginx
+      ansible.builtin.apt:
+        name: nginx
+
+    - name: Add additional port to nginx conf
+      ansible.builtin.lineinfile:
+        insertafter: 'listen 80 default_server;'
+        firstmatch: yes
+        line: "\tlisten 81 default_server;"
+        path: /etc/nginx/sites-enabled/default
+
+    - name: Start nginx
+      ansible.builtin.systemd:
+        name: nginx
+        state: restarted
+
+    - name: Add internal routes
+      ansible.builtin.lineinfile:
+        path: /etc/network/interfaces
+        line: 'up {{item}}'
+      loop:
+        - sleep 5
+        - ip r d default via 10.0.2.2
+        - sleep 1
+        - ip r a default via 192.168.0.1
+
+    - name: reboot system
+      ansible.builtin.reboot:
+        connect_timeout: 30
+

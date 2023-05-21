@@ -1,0 +1,20 @@
+---
+  - name: Install nftables
+    apt:
+      name:
+        - nftables
+
+  - name: Enable nftables service
+    ansible.builtin.systemd:
+      name: nftables
+      enabled: yes
+      state: stopped
+
+  - name: Set Sysctl setting for routing
+    ansible.posix.sysctl:
+      name: net.ipv4.ip_forward
+      value: '1'
+      sysctl_set: yes
+      state: present
+      reload: yes
+
