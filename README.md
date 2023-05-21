@@ -38,7 +38,7 @@ for i in $(seq 1 3); do nc -w 1 192.168.1.2 "$i$i$i"; done; ssh vagrant@192.168.
 ### Файлы:
 - **Vagrant** - файл для создания ВМ и запуска ansible
 - **server.yml** - ansible playbook для настройки `centralServer`
-- **centralROuter.yml, inetRouter1.yml, inetRouter2.yml** - ansible playbook для настройки маршрутизаторов
+- **centralRouter.yml, inetRouter1.yml, inetRouter2.yml** - ansible playbook для настройки маршрутизаторов
 - **portknocking.nft** - правила для **nftables** реализующие portknocking на `inetRouter1`
 - **portforward.nft** - правила для **nftables** реализующие перенеправление и **NAT** на `inetRouter2`
 - **mark.nft** - правила для **nftables** реализующие маркировку пакетов на `centralServer`
